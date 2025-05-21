@@ -12,6 +12,8 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     // userName: "",
     fullName: "",
@@ -34,6 +36,7 @@ export default function AuthForm() {
   const handleSubmit = async (e) => {
   e.preventDefault();
   setError(null);
+  setIsLoading(true);
 
   try {
     if (isSignUp) {
@@ -50,6 +53,7 @@ export default function AuthForm() {
       });
 
       alert("Account created successfully!");
+      setIsLoading(false); // ✅ stop loading
     } else {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -61,21 +65,35 @@ export default function AuthForm() {
       const userDoc = await getDoc(doc(db, "admin", user.uid));
       if (!userDoc.exists()) {
         alert("You are not authorized to log in.");
+        setIsLoading(false); // ✅ stop loading here too
         return;
       }
 
       localStorage.setItem("adminId", user.uid);
-      alert("Logged in successfully!");
-      router.push("/main");
+      // Optionally keep isLoading true until navigation completes
+      setTimeout(() => {
+        setIsLoading(false); // ✅ stop loading
+        router.push("/main");
+      }, 3000);
     }
   } catch (err) {
     console.error("Auth error:", err);
     setError(err.message);
+    setIsLoading(false); // ✅ stop loading on error
   }
 };
   
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-white overflow-hidden pt-0">
+      {isLoading && (
+  <div className="fixed inset-0 z-50 bg-black/70 bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
+      <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="text-lg font-semibold text-blue-400">Redirecting to dashboard...</p>
+    </div>
+  </div>
+)}
+
       <div className="relative w-[600px] h-[400px] bg-white rounded-lg overflow-hidden shadow-xl flex">
         {/* Form Section */}
         <motion.div
@@ -114,23 +132,35 @@ export default function AuthForm() {
 
         {/* Toggle Button Section */}
         <motion.div
-          initial={{ x: "100%" }}
-          animate={{ x: isSignUp ? "0%" : "171%" }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="absolute w-[37%] h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-white p-6"
-        >
-          <p className="mt-4 text-lg text-gray-700 pb-2.5">
-            {isSignUp ? "Already have an account?" : "Don't have an account?"}
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 bg-gray-700 text-white rounded-lg shadow-md hover:bg-gray-600 transition-all"
-            onClick={() => setIsSignUp(!isSignUp)}
-          >
-            {isSignUp ? "Sign In" : "Sign Up"}
-          </motion.button>
-        </motion.div>
+  initial={{ x: "100%" }}
+  animate={{ x: isSignUp ? "0%" : "171%" }}
+  transition={{ duration: 0.6, ease: "easeInOut" }}
+  className="relative w-[37%] h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-white p-6"
+>
+  {/* 👇 Isolated image */}
+  <div className="absolute top-6">
+    <img
+      src="/images/logo.png"
+      alt="Auth Illustration"
+      className="w-16 h-16 object-contain"
+    />
+  </div>
+
+  {/* This stays centered */}
+  <p className="mt-4 text-sm text-gray-700">
+    {isSignUp ? "Already have an account?" : "Don't have an account?"}
+  </p>
+
+  <motion.button
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="px-4 py-2 bg-[#03acff] text-white text-sm rounded-lg shadow-md hover:bg-[#03acff] transition-all mt-2"
+    onClick={() => setIsSignUp(!isSignUp)}
+  >
+    {isSignUp ? "Sign In" : "Sign Up"}
+  </motion.button>
+</motion.div>
+
       </div>
     </div>
   );
@@ -163,7 +193,7 @@ function SignInForm({ formData, handleChange, handleSubmit, error, password }) {
 
         <button
           type="submit"
-          className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+          className="bg-[#03acff] text-white px-4 py-2 rounded-lg hover:bg-[#03acff]"
         >
           Sign In
         </button>
