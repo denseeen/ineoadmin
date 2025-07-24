@@ -73,7 +73,7 @@ export default function AuthForm() {
       // Optionally keep isLoading true until navigation completes
       setTimeout(() => {
         setIsLoading(false); // ✅ stop loading
-        router.push("/main");
+        router.push("/trial-registration");
       }, 3000);
     }
   } catch (err) {
@@ -89,7 +89,7 @@ export default function AuthForm() {
   <div className="fixed inset-0 z-50 bg-black/70 bg-opacity-50 flex items-center justify-center">
     <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
       <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="text-lg font-semibold text-blue-400">Redirecting to dashboard...</p>
+      <p className="text-lg font-semibold text-blue-400">Please wait...</p>
     </div>
   </div>
 )}
@@ -140,9 +140,9 @@ export default function AuthForm() {
   {/* 👇 Isolated image */}
   <div className="absolute top-6">
     <img
-      src="/images/logo.png"
+      src="/images/final-logo.png"
       alt="Auth Illustration"
-      className="w-16 h-16 object-contain"
+      className="w-32 h-16 object-contain"
     />
   </div>
 
@@ -247,7 +247,7 @@ function SignUpForm({ formData, handleChange, handleSubmit, error, password }) {
         />
         <button
           type="submit"
-          className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600"
+          className="bg-[#03acff] text-white px-4 py-2 rounded hover:bg-[#03acff]"
         >
           Sign Up
         </button>

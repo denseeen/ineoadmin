@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="flex h-screen">
           <SideNav />
-          <main className="flex-1 p-6 bg-gray-100 overflow-auto">
+          <main className="flex-1 p-6 bg-gradient-to-br from-blue-100 to-white overflow-auto">
             {children}
           </main>
         </div>
